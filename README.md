@@ -273,6 +273,22 @@ docker build -f Dockerfile_make --build-arg BACKREST_VERSION=2.49 --build-arg BA
 docker build -f Dockerfile_make.alpine --build-arg BACKREST_VERSION=2.49 --build-arg BACKREST_COMPLETION_VERSION=v0.10 -t pgbackrest:2.49-alpine .
 ```
 
+### Trigger GitHub Actions manually
+
+Via GitHub UI:
+
+1. Go to Actions tab in your GitHub repository
+1. Click build workflow in the left sidebar
+1. Click Run workflow button (top right)
+1. Enter the version (e.g., 2.57.0)
+1. Click Run workflow
+
+Via GitHub CLI:
+
+```bash
+gh workflow run build.yml -f pgbackrest_version=2.57.0
+```
+
 ## Build with Greenplum support
 
 PR [pgbackrest/pull/1833](https://github.com/pgbackrest/pgbackrest/pull/1833) is still not merged into pgBackRest. The separate tags `*-gpdb` are used for pgBackRest images with Greenplum support. When the PR is accepted, separate tags will no longer be needed.

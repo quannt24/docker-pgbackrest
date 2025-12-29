@@ -1,6 +1,14 @@
 name: build
 
-on: [push, pull_request]
+on: 
+  # push:
+  # pull_request:
+  workflow_dispatch:
+    inputs:
+      pgbackrest_version:
+        description: 'pgBackRest version to build (e.g., 2.57.0)'
+        required: true
+        type: string
 
 env:
   pgbackrest_completion_version: "v0.10"
@@ -14,7 +22,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        pgbackrest_version: ["2.54.2", "2.55.0", "2.55.1", "2.56.0", "2.57.0"]
+        pgbackrest_version: ${{ github.event_name == 'workflow_dispatch' && fromJSON(format('["{0}"]', github.event.inputs.pgbackrest_version)) || fromJSON('["2.54.2", "2.55.0", "2.55.1", "2.56.0", "2.57.0"]') }}
     env: 
       latest_version: "2.57.0"
       download_url: "https://github.com/pgbackrest/pgbackrest/archive/release"
