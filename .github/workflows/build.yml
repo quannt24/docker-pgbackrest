@@ -81,6 +81,28 @@ jobs:
         BUILD_PLATFORMS: ${{ env.build_platforms }}
         DOWNLOAD_URL: ${{ env.download_url }}
 
+    - name: Build image and push to ghcr.io
+      if: github.event_name == 'workflow_dispatch'
+      run: |
+        echo ${GITHUB_TOKEN} | docker login ghcr.io -u ${GITHUB_ACTOR} --password-stdin
+        docker buildx build --push \
+            -f Dockerfile \
+            --platform ${BUILD_PLATFORMS} \
+            --build-arg BACKREST_VERSION=${TAG} \
+            --build-arg REPO_BUILD_TAG=${REPO_TAG} \
+            --build-arg BACKREST_COMPLETION_VERSION=${COMPL_TAG} \
+            --build-arg BACKREST_DOWNLOAD_URL=${DOWNLOAD_URL} \
+            -t ${IMAGE_NAME}:${TAG} .
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_ACTOR: ${{ github.actor }}
+        IMAGE_NAME: ghcr.io/quannt24/docker-pgbackrest
+        TAG: ${{ matrix.pgbackrest_version }}
+        REPO_TAG: ${{ steps.vars.outputs.repo_tag }}
+        COMPL_TAG: ${{ env.pgbackrest_completion_version }}
+        BUILD_PLATFORMS: ${{ env.build_platforms }}
+        DOWNLOAD_URL: ${{ env.download_url }}
+
     - name: Build image and push tag to ghcr.io and Docker Hub
       if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
       run: |
